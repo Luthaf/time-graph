@@ -1,0 +1,22 @@
+[package]
+name = "time-graph-macros"
+version = "0.1.0"
+authors = ["Luthaf <luthaf@luthaf.fr>"]
+edition = "2018"
+repository = "https://github.com/luthaf/time-graph"
+license = "BSD-3-Clause"
+keywords = ["profiling"]
+categories = ["development-tools::profiling"]
+description = """
+Attribute macro to instrument functions and record their executing time with the
+[time-graph](https://crates.io/crates/time-graph) crate.
+"""
+
+[lib]
+proc-macro = true
+test = false
+doctest = false
+
+[dependencies]
+syn = {version = "1.0", features = ["full"]}
+quote = "1.0"

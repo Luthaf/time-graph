@@ -41,6 +41,9 @@
 
 pub use time_graph_macros::instrument;
 
+#[doc(hidden)]
+pub use once_cell::sync::Lazy;
+
 /// Create a new [`CallSite`] with the given name at the current source
 /// location.
 ///
@@ -55,8 +58,7 @@ pub use time_graph_macros::instrument;
 macro_rules! callsite {
     ($name: expr) => {
         {
-            use once_cell::sync::Lazy;
-            static CALL_SITE: Lazy<$crate::CallSite> = Lazy::new(|| {
+            static CALL_SITE: $crate::Lazy<$crate::CallSite> = $crate::Lazy::new(|| {
                 $crate::CallSite::new(
                     $name,
                     module_path!(),
@@ -64,8 +66,10 @@ macro_rules! callsite {
                     line!(),
                 )
             });
-            static REGISTRATION: Lazy<()> = Lazy::new(|| $crate::register_callsite(&*CALL_SITE));
-            Lazy::force(&REGISTRATION);
+            static REGISTRATION: $crate::Lazy<()> = $crate::Lazy::new(|| {
+                $crate::register_callsite(&*CALL_SITE)
+            });
+            $crate::Lazy::force(&REGISTRATION);
 
             &*CALL_SITE
         }

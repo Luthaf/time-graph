@@ -192,8 +192,8 @@ pub fn clear_collected_data() {
 }
 
 /// Enable/disable data collection
-pub fn enable_data_collection(value: bool) {
-    COLLECTION_ENABLED.store(value, Ordering::Release);
+pub fn enable_data_collection(enabled: bool) {
+    COLLECTION_ENABLED.store(enabled, Ordering::Release);
 }
 
 /// Get a copy of the call graph as currently known

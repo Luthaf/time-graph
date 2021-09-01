@@ -50,7 +50,7 @@ impl Span {
     pub fn enter(&self) -> SpanGuard<'_> {
         if !COLLECTION_ENABLED.load(Ordering::Acquire) {
             return SpanGuard {
-                span: &self,
+                span: self,
                 parent: None,
                 start: 0,
             };
@@ -66,7 +66,7 @@ impl Span {
         });
 
         SpanGuard {
-            span: &self,
+            span: self,
             parent: parent,
             start: CLOCK.start(),
         }
@@ -337,10 +337,31 @@ impl FullCallGraph {
     /// span are mutually recursive.
     #[cfg(feature = "table")]
     pub fn as_table(&self) -> String {
+        self.as_table_impl(false)
+    }
+
+    /// Same as `as_table`, but using the short names of the spans instead of
+    /// the full name.
+    #[cfg(feature = "table")]
+    pub fn as_short_table(&self) -> String {
+        self.as_table_impl(true)
+    }
+
+    #[cfg(feature = "table")]
+    fn as_table_impl(&self, short_names: bool) -> String {
         use petgraph::Direction;
 
         use term_table::row::Row;
         use term_table::table_cell::{Alignment, TableCell};
+
+        let mut names = BTreeMap::new();
+        for node in self.graph.node_weights() {
+            if short_names {
+                names.insert(node.id, node.callsite.name().to_string());
+            } else {
+                names.insert(node.id, node.callsite.full_name());
+            }
+        }
 
         let mut table = term_table::Table::new();
         table.style = term_table::TableStyle::extended();
@@ -376,8 +397,8 @@ impl FullCallGraph {
             let warn = if mean < Duration::from_nanos(1500) { " ⚠️ " } else { "" };
 
             table.add_row(Row::new(vec![
-                TableCell::new_with_alignment(self.graph[node_id].id, 1, Alignment::Right),
-                TableCell::new(&node.callsite.full_name()),
+                TableCell::new_with_alignment(node.id, 1, Alignment::Right),
+                TableCell::new(&names[&node.id]),
                 TableCell::new_with_alignment(node.called, 1, Alignment::Right),
                 TableCell::new_with_alignment(called_by, 1, Alignment::Right),
                 TableCell::new_with_alignment(

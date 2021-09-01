@@ -36,4 +36,7 @@ fn main() {
 
     #[cfg(feature = "table")]
     println!("{}", graph.as_table());
+
+    #[cfg(feature = "table")]
+    println!("{}", graph.as_short_table());
 }

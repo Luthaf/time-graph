@@ -416,7 +416,7 @@ impl FullCallGraph {
         for call in self.calls() {
             all_calls.push(json::object! {
                 "caller" => call.caller,
-                "callee" => call.caller,
+                "callee" => call.callee,
                 "count" => call.count,
             }).expect("failed to add edge information to JSON");
         }

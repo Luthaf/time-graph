@@ -1,8 +1,8 @@
 [package]
 name = "time-graph"
-version = "0.1.3"
+version = "0.2.0"
 authors = ["Luthaf <luthaf@luthaf.fr>"]
-edition = "2018"
+edition = "2021"
 readme = "../README.md"
 repository = "https://github.com/luthaf/time-graph"
 license = "BSD-3-Clause"

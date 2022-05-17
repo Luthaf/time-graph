@@ -60,7 +60,7 @@ macro_rules! callsite {
         {
             static CALL_SITE: $crate::Lazy<$crate::CallSite> = $crate::Lazy::new(|| {
                 $crate::CallSite::new(
-                    $name,
+                    $name.into(),
                     module_path!(),
                     file!(),
                     line!(),
@@ -93,6 +93,14 @@ macro_rules! callsite {
 /// });
 ///
 /// assert_eq!(result, 42);
+///
+/// let result = spanned!(format!("dynamic name: {}", "is nice"), {
+///     let first = 30;
+///     let second = 12;
+///     first - second
+/// });
+///
+/// assert_eq!(result, 18);
 /// ```
 #[macro_export]
 macro_rules! spanned {

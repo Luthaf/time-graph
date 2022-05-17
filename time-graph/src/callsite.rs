@@ -1,3 +1,5 @@
+
+use std::borrow::Cow;
 use std::num::NonZeroU64;
 use std::sync::atomic::{Ordering, AtomicU64, AtomicPtr};
 
@@ -32,7 +34,7 @@ pub struct CallSite {
     /// Unique identifier of this call site
     id: CallSiteId,
     /// The name of the call site
-    name: &'static str,
+    name: Cow<'static, str>,
     /// The name of the Rust module where the call site occurred
     module_path: &'static str,
     /// The name of the source code file where the call site occurred
@@ -50,7 +52,7 @@ impl CallSite {
     /// private to this crate, and is only marked `pub` to be able to call it
     /// from inside macros.
     #[doc(hidden)]
-    pub fn new(name: &'static str, module_path: &'static str, file: &'static str, line: u32) -> CallSite {
+    pub fn new(name: Cow<'static, str>, module_path: &'static str, file: &'static str, line: u32) -> CallSite {
         let id = CallSiteId::new(NEXT_CALL_SITE_ID.fetch_add(1, Ordering::SeqCst));
         let next = AtomicPtr::new(std::ptr::null_mut());
         CallSite { id, name, module_path, file, line, next }
@@ -62,7 +64,7 @@ impl CallSite {
 
     /// Get the user-provided name for this call site
     pub fn name(&self) -> &str {
-        self.name
+        &self.name
     }
 
     /// Get the rust module path to the source code location of this call site
@@ -88,10 +90,10 @@ impl CallSite {
 
         if self.name.contains(' ') {
             name += "{";
-            name += self.name;
+            name += &self.name;
             name += "}";
         } else {
-            name += self.name;
+            name += &self.name;
         }
 
         return name;

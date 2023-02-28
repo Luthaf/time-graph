@@ -77,6 +77,6 @@ the corresponding [code](time-graph/examples/calculation.rs)):
 
 ## License and contributions
 
-This crate is distributed under the [3 clauses BSD license](LICENSE). By
-contributing to this crate, you agree to distribute your contributions under the
-same license.
+This crate is distributed under both the [MIT license](LICENSE-MIT) and [Apache
+2.0 license](LICENSE-APACHE). By contributing to this crate, you agree to distribute
+your contributions under the same license.

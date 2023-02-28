@@ -144,12 +144,7 @@ impl LightCallGraph {
 
     /// Find a node in the graph with its `CallSiteId`.
     fn find(&mut self, callsite: CallSiteId) -> Option<NodeIndex> {
-        for id in self.graph.node_indices() {
-            if self.graph[id].callsite == callsite {
-                return Some(id);
-            }
-        }
-        return None;
+        self.graph.node_indices().find(|&id| self.graph[id].callsite == callsite)
     }
 
     /// Add a node for the given callsite to the graph, do nothing if there is

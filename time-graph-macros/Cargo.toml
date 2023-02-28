@@ -1,6 +1,6 @@
 [package]
 name = "time-graph-macros"
-version = "0.1.0"
+version = "0.3.0"
 authors = ["Luthaf <luthaf@luthaf.fr>"]
 edition = "2018"
 repository = "https://github.com/luthaf/time-graph"

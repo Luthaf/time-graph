@@ -346,8 +346,8 @@ impl FullCallGraph {
     fn as_table_impl(&self, short_names: bool) -> String {
         use petgraph::Direction;
 
-        use term_table::row::Row;
-        use term_table::table_cell::{Alignment, TableCell};
+        use crate::table::Row;
+        use crate::table::TableCell;
 
         let mut names = BTreeMap::new();
         for node in self.graph.node_weights() {
@@ -358,8 +358,8 @@ impl FullCallGraph {
             }
         }
 
-        let mut table = term_table::Table::new();
-        table.style = term_table::TableStyle::extended();
+        let mut table = crate::table::Table::new();
+        table.style = crate::table::TableStyle::extended();
 
         table.add_row(Row::new(vec![
             "id",
@@ -392,20 +392,12 @@ impl FullCallGraph {
             let warn = if mean < Duration::from_nanos(1500) { " ⚠️ " } else { "" };
 
             table.add_row(Row::new(vec![
-                TableCell::new_with_alignment(node.id, 1, Alignment::Right),
+                TableCell::new_right_aligned(node.id),
                 TableCell::new(&names[&node.id]),
-                TableCell::new_with_alignment(node.called, 1, Alignment::Right),
-                TableCell::new_with_alignment(called_by, 1, Alignment::Right),
-                TableCell::new_with_alignment(
-                    &format!("{:.2?}", node.elapsed),
-                    1,
-                    Alignment::Right,
-                ),
-                TableCell::new_with_alignment(
-                    &format!("{:.2?}{}", mean, warn),
-                    1,
-                    Alignment::Right,
-                ),
+                TableCell::new_right_aligned(node.called),
+                TableCell::new_right_aligned(called_by),
+                TableCell::new_right_aligned(&format!("{:.2?}", node.elapsed)),
+                TableCell::new_right_aligned(&format!("{:.2?}{}", mean, warn)),
             ]));
         }
 

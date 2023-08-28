@@ -116,3 +116,6 @@ mod graph;
 pub use self::graph::{Span, SpanGuard};
 pub use self::graph::{get_full_graph, clear_collected_data, enable_data_collection};
 pub use self::graph::{FullCallGraph, TimedSpan};
+
+#[cfg(feature = "table")]
+mod table;

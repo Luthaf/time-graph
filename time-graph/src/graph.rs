@@ -24,7 +24,7 @@ static COLLECTION_ENABLED: AtomicBool = AtomicBool::new(false);
 thread_local! {
     /// For each thread, which span is currently executing? This will become the
     /// parent of new spans.
-    pub static LOCAL_CURRENT_SPAN: RefCell<Option<CallSiteId>> = RefCell::new(None);
+    pub static LOCAL_CURRENT_SPAN: RefCell<Option<CallSiteId>> = const { RefCell::new(None) };
 }
 
 /// A [`Span`] records a single execution of code associated with a
@@ -68,7 +68,7 @@ impl Span {
         SpanGuard {
             span: self,
             parent: parent,
-            start: CLOCK.start(),
+            start: CLOCK.raw(),
         }
     }
 }
@@ -86,7 +86,7 @@ impl<'a> Drop for SpanGuard<'a>  {
         if !COLLECTION_ENABLED.load(Ordering::Acquire) {
             return;
         }
-        let elapsed = CLOCK.delta(self.start, CLOCK.end());
+        let elapsed = CLOCK.delta(self.start, CLOCK.raw());
 
         LOCAL_CURRENT_SPAN.with(|parent| {
             let mut parent = parent.borrow_mut();
@@ -396,8 +396,8 @@ impl FullCallGraph {
                 TableCell::new(&names[&node.id]),
                 TableCell::new_right_aligned(node.called),
                 TableCell::new_right_aligned(called_by),
-                TableCell::new_right_aligned(&format!("{:.2?}", node.elapsed)),
-                TableCell::new_right_aligned(&format!("{:.2?}{}", mean, warn)),
+                TableCell::new_right_aligned(format!("{:.2?}", node.elapsed)),
+                TableCell::new_right_aligned(format!("{:.2?}{}", mean, warn)),
             ]));
         }
 

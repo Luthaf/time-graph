@@ -163,7 +163,7 @@ impl Table {
         Self {
             rows: Vec::new(),
             style: TableStyle::extended(),
-            max_column_width: std::usize::MAX,
+            max_column_width: usize::MAX,
             max_column_widths: HashMap::new(),
             separate_rows: true,
             has_top_boarder: true,

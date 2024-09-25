@@ -53,7 +53,7 @@ impl TableCell {
     ///
     /// New line characters are taken into account during the calculation.
     pub fn width(&self) -> usize {
-        let wrapped = self.wrapped_content(std::usize::MAX);
+        let wrapped = self.wrapped_content(usize::MAX);
         let mut max = 0;
         for s in wrapped {
             let str_width = s.width();

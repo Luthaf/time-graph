@@ -47,7 +47,7 @@ impl Span {
     /// Enter the span, the span will automatically be exited when the
     /// [`SpanGuard`] is dropped.
     #[must_use]
-    pub fn enter(&self) -> SpanGuard<'_> {
+    pub fn enter(&mut self) -> SpanGuard<'_> {
         if !COLLECTION_ENABLED.load(Ordering::Acquire) {
             return SpanGuard {
                 span: self,
@@ -65,6 +65,11 @@ impl Span {
             return previous;
         });
 
+        self.callsite.depth.with(|depth| {
+            let current = depth.get();
+            depth.set(current + 1);
+        });
+
         SpanGuard {
             span: self,
             parent: parent,
@@ -76,7 +81,7 @@ impl Span {
 /// When a [`SpanGuard`] is dropped, it saves the execution time of the
 /// corresponding span in the global call graph.
 pub struct SpanGuard<'a> {
-    span: &'a Span,
+    span: &'a mut Span,
     parent: Option<CallSiteId>,
     start: u64,
 }
@@ -93,11 +98,21 @@ impl<'a> Drop for SpanGuard<'a>  {
             *parent = self.parent;
         });
 
-
         let mut graph = CALL_GRAPH.lock().expect("poisoned mutex");
         let callsite = self.span.callsite.id();
         graph.add_node(callsite);
-        graph.increase_timing(callsite, elapsed);
+
+        let depth = self.span.callsite.depth.with(|depth| {
+            let current = depth.get();
+            depth.set(current - 1);
+            depth.get()
+        });
+
+        if depth == 0 {
+            graph.increase_timing(callsite, elapsed);
+        } else {
+            graph.increase_called(callsite);
+        }
 
         if let Some(parent) = self.parent {
             graph.add_node(parent);
@@ -179,6 +194,12 @@ impl LightCallGraph {
         self.graph[id].elapsed += time;
         self.graph[id].called += 1;
     }
+
+    /// Increate the number of time this span has been called by one.
+    pub fn increase_called(&mut self, span: CallSiteId) {
+        let id = self.find(span).expect("missing node");
+        self.graph[id].called += 1;
+    }
 }
 
 /// Clear the global call graph from all data
@@ -211,6 +232,7 @@ pub fn get_full_graph() -> FullCallGraph {
 
 /// [`TimedSpan`] contains all data related to a single function or span inside
 /// the global call graph.
+#[derive(Debug, Clone)]
 pub struct TimedSpan {
     /// Unique identifier of this function/span in the call graph
     pub id: usize,
@@ -284,11 +306,13 @@ impl std::fmt::Display for TimedSpan {
 ///                     \      |
 ///                  | inner, called 3 |
 /// ```
+#[derive(Debug, Clone)]
 pub struct FullCallGraph {
     graph: Graph<TimedSpan, usize>
 }
 
 /// A set of calls from one function/span to another
+#[derive(Debug, Clone)]
 pub struct Calls {
     /// the outer/calling function/span
     pub caller: usize,

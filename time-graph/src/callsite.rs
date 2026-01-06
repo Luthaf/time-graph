@@ -28,9 +28,12 @@ impl CallSiteId {
 ///
 /// The only way to create a [`CallSite`] is with the [`macro@callsite`] macro,
 /// which also takes care of registering the call site globally.
+#[derive(Debug)]
 pub struct CallSite {
     /// Unique identifier of this call site
     id: CallSiteId,
+    /// Tracking the current call depth for recursive calls
+    pub(crate) depth: &'static std::thread::LocalKey<std::cell::Cell<usize>>,
     /// The name of the call site
     name: &'static str,
     /// The name of the Rust module where the call site occurred
@@ -50,10 +53,16 @@ impl CallSite {
     /// private to this crate, and is only marked `pub` to be able to call it
     /// from inside macros.
     #[doc(hidden)]
-    pub fn new(name: &'static str, module_path: &'static str, file: &'static str, line: u32) -> CallSite {
+    pub fn new(
+        depth: &'static std::thread::LocalKey<std::cell::Cell<usize>>,
+        name: &'static str,
+        module_path: &'static str,
+        file: &'static str,
+        line: u32
+    ) -> CallSite {
         let id = CallSiteId::new(NEXT_CALL_SITE_ID.fetch_add(1, Ordering::SeqCst));
         let next = AtomicPtr::new(std::ptr::null_mut());
-        CallSite { id, name, module_path, file, line, next }
+        CallSite { id, depth, name, module_path, file, line, next }
     }
 
     pub(crate) fn id(&self) -> CallSiteId {

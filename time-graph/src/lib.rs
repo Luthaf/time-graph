@@ -58,8 +58,12 @@ pub use once_cell::sync::Lazy;
 macro_rules! callsite {
     ($name: expr) => {
         {
+            thread_local! {
+                static __TG_DEPTH: ::std::cell::Cell<usize> = ::std::cell::Cell::new(0);
+            }
             static CALL_SITE: $crate::Lazy<$crate::CallSite> = $crate::Lazy::new(|| {
                 $crate::CallSite::new(
+                    &__TG_DEPTH,
                     $name,
                     module_path!(),
                     file!(),
@@ -98,9 +102,9 @@ macro_rules! callsite {
 macro_rules! spanned {
     ($name: expr, $block: expr) => {
         {
-            let __tfg_callsite = $crate::callsite!($name);
-            let __tfg_span = $crate::Span::new(__tfg_callsite);
-            let __tfg_guard = __tfg_span.enter();
+            let __tg_callsite = $crate::callsite!($name);
+            let mut __tg_span = $crate::Span::new(__tg_callsite);
+            let __tg_guard = __tg_span.enter();
 
             $block
         }

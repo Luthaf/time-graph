@@ -11,11 +11,11 @@ pub enum Alignment {
     Center,
 }
 
-///A table cell containing some str data.
+/// A table cell containing some str data.
 ///
-///A cell may span multiple columns by setting the value of `col_span`.
+/// A cell may span multiple columns by setting the value of `col_span`.
 ///
-///`pad_content` will add a space to either side of the cell's content.AsRef
+/// `pad_content` will add a space to either side of the cell's content.
 #[derive(Debug, Clone)]
 pub struct TableCell {
     pub data: String,

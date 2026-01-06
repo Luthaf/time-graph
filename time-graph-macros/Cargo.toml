@@ -2,7 +2,8 @@
 name = "time-graph-macros"
 version = "0.3.2"
 authors = ["Luthaf <luthaf@luthaf.fr>"]
-edition = "2018"
+edition = "2021"
+rust-version = "1.74"
 repository = "https://github.com/luthaf/time-graph"
 license = "Apache-2.0/MIT"
 keywords = ["profiling"]

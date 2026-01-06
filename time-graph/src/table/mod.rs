@@ -26,7 +26,7 @@ pub enum RowPosition {
 
 /// A set of characters which make up a table style
 ///
-///# Example
+/// # Example
 ///
 ///```
 /// term_table::TableStyle {
@@ -61,7 +61,7 @@ pub struct TableStyle {
 impl TableStyle {
     /// Table style using extended character set
     ///
-    ///# Example
+    /// # Example
     ///
     ///<pre>
     /// ╔═════════════════════════════════════════════════════════════════════════════════╗
@@ -145,14 +145,16 @@ impl TableStyle {
 pub struct Table {
     pub rows: Vec<Row>,
     pub style: TableStyle,
-    /// The maximum width of all columns. Overridden by values in column_widths. Defaults to `std::usize::max`
+    /// The maximum width of all columns. Overridden by values in column_widths.
+    /// Defaults to `std::usize::max`
     pub max_column_width: usize,
     /// The maximum widths of specific columns. Override max_column
     pub max_column_widths: HashMap<usize, usize>,
     /// Whether or not to vertically separate rows in the table
     pub separate_rows: bool,
-    /// Whether the table should have a top boarder.
-    /// Setting `has_separator` to false on the first row will have the same effect as setting this to false
+    /// Whether the table should have a top boarder. Setting `has_separator` to
+    /// false on the first row will have the same effect as setting this to
+    /// false
     pub has_top_boarder: bool,
     /// Whether the table should have a bottom boarder
     pub has_bottom_boarder: bool,

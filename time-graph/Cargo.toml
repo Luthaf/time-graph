@@ -1,6 +1,6 @@
 [package]
 name = "time-graph"
-version = "0.3.2"
+version = "0.3.3"
 authors = ["Luthaf <luthaf@luthaf.fr>"]
 edition = "2021"
 rust-version = "1.74"
@@ -29,7 +29,7 @@ petgraph = "0.8"
 json = { version = "0.12", optional = true }
 unicode-width = { version = "0.2", optional = true}
 
-time-graph-macros = {path = "../time-graph-macros", version = "0.3.2"}
+time-graph-macros = {path = "../time-graph-macros", version = "0.3.3"}
 
 [dev-dependencies]
 criterion = {version = "0.8"}
